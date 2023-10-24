@@ -1,0 +1,68 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+a{
+text-decoration: none;
+color: #212529;
+}
+
+.icons i {
+  color: #b5b3b3;
+  border: 1px solid #b5b3b3;
+  padding: 6px;
+  margin-left: 4px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.activity-done {
+  font-weight: 600;
+}
+
+.list-group li {
+  margin-bottom: 12px;
+}
+
+.list-group-item {
+}
+
+li{
+    list-style: none;
+}
+
+.list li {
+  list-style: none;
+  padding: 10px;
+  border: 1px solid #e3dada;
+  margin-top: 12px;
+  border-radius: 5px;
+  background: #fff;
+}
+
+.checkicon {
+  color: green;
+  font-size: 19px;
+}
+
+.date-time {
+  font-size: 12px;
+}
+
+.profile-image img {
+  margin-left: 3px;
+}
+
+@media (max-width: 1100px) {
+    .login-container {
+        display: none;
+    }
+}
+
+@media (min-width: 1101px) {
+    .login-container {
+        display: block;
+    }
+}

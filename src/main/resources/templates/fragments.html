@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:fragment="head">
+    <meta charset="UTF-8">
+    <title>JIHO-PROJECT</title>
+
+    <!-- bootstrap -->
+    <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/style.css"/>
+    <script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="/node_modules/@yaireo/tagify/dist/tagify.css"/>
+    <script src="/node_modules/jquery/dist/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <script src="/js/summernote-lite.js"></script>
+    <script src="/js/summernote-ko-KR.js"></script>
+    <link rel="stylesheet" href="/css/summernote-lite.css">
+    <style>
+        .bd-navbar {
+        padding: 0.75rem 0;
+        }
+    </style>
+</head>
+<header th:fragment="nav-bar" class="navbar navbar-expand-md bd-navbar">
+    <nav class="container-xxl flex-wrap flex-md-nowrap">
+        <a class="navbar-brand p-0 me-2" href="/" th:href="@{/}" aria-label="jihoproject">
+            <img src="/img/logo.jpg" width="50" height="50">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div  class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav flex-row flex-wrap bd-navbar-nav pt-2 py-md-0">
+                <li class="nav-item">
+                    <a class="nav-link p-2 active" aria-current="page" href="/">메인</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link p-2" href="/notice">공지</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link p-2 dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        그룹메뉴
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/newgroup">그룹 개설</a></li>
+                        <li><a class="dropdown-item" href="#">카테고리별 그룹</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">그룹 랭킹</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="navbar-nav flex-row flex-wrap ms-md-auto">
+                <li class="nav-item dropdown" sec:authorize="isAuthenticated()">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"
+                       sec:authentication="name">
+                        내 정보
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" th:href="@{'/profile/' + ${#authentication.name}}">프로필</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">내 일정</a></li>
+                        <li>
+                            <form th:action="@{/logout}" method="post">
+                                <button class="dropdown-item">로그아웃</button>
+                            </form>
+                        </li>
+                    </ul>
+                </li>
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link" th:href="@{/login}">로그인</a>
+                </li>
+                <li class="nav-item" sec:authorize="!isAuthenticated()">
+                    <a class="nav-link" th:href="@{/sign-up}">가입</a>
+                </li>
+            </ul>
+            <form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" placeholder="그룹검색" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+        </div>
+    </nav>
+</header>
+
+<nav th:fragment="group-bar (currentMenu)" class="container-xxl navbar navbar-expand-md p-4">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#groupnavbarSupportedContent" aria-controls="groupnavbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+        <div  class="collapse navbar-collapse" id="groupnavbarSupportedContent">
+            <ul class="navbar-nav nav-tabs flex-row flex-wrap bd-navbar-nav pt-2 py-md-0">
+                <li class="nav-item">
+                    <a class="nav-link p-2 me-3" th:href="@{'/group/'+${group.path}}"
+                       th:classappend="${currentMenu == 'groupMain'}? active">그룹 메인</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link p-2 me-3" th:href="@{'/group/'+${group.path}+'/notice'}"
+                       th:classappend="${currentMenu == 'notice'}? active">공지</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link p-2 me-3" href="#"
+                       th:classappend="${currentMenu == 'schedule'}? active">일정</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link p-2 me-3" th:href="@{'/group/'+${group.path}+'/community'}"
+                       th:classappend="${currentMenu == 'community'}? active">게시판</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link p-2 me-3" href="#"
+                       th:classappend="${currentMenu == 'inquiry'}? active">문의</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link p-2" href="#" th:if="${group.isManager(#authentication.principal)}"
+                       th:classappend="${currentMenu == 'settings'}? inquiry">설정</a>
+                </li>
+            </ul>
+        </div>
+</nav>
+
+<nav th:fragment="profile-bar" class="container-xxl navbar navbar-expand-md p-4">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#profilenavbarSupportedContent" aria-controls="profilenavbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div  class="collapse navbar-collapse" id="profilenavbarSupportedContent">
+        <ul class="navbar-nav flex-row flex-wrap bd-navbar-nav pt-2 py-md-0">
+            <li class="nav-item">
+                <a class="nav-link p-2 me-3" aria-current="page" th:href="@{'/profile/' + ${account.nickName}}">회원 정보</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link p-2 me-3" th:href="@{'/profile/grouplist/' + ${account.nickName}}">가입그룹</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link p-2 me-3" href="#" th:if="${isOwner}">내 일정</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<script type="application/javascript" th:fragment="summernote">
+    $(document).ready(function() {
+        $('#summernote').summernote({
+            codeviewFilter: false, // 코드 보기 필터 비활성화
+            codeviewIframeFilter: false, // 코드 보기 iframe 필터 비활성화
+
+            height: 500, // 에디터 높이
+            minHeight: null, // 최소 높이
+            maxHeight: null, // 최대 높이
+            focus: true, // 에디터 로딩 후 포커스 설정
+            lang: 'ko-KR', // 언어 설정 (한국어)
+
+            toolbar: [
+                ['style', ['style']], // 글자 스타일 설정 옵션
+                ['fontsize', ['fontsize']], // 글꼴 크기 설정 옵션
+                ['font', ['bold', 'underline', 'clear']], // 글자 굵게, 밑줄, 포맷 제거 옵션
+                ['color', ['color']], // 글자 색상 설정 옵션
+                ['table', ['table']], // 테이블 삽입 옵션
+                ['para', ['ul', 'ol', 'paragraph']], // 문단 스타일, 순서 없는 목록, 순서 있는 목록 옵션
+                ['height', ['height']], // 에디터 높이 조절 옵션
+                ['view', ['codeview', 'help']], // 코드 보기, 전체 화면, 도움말 옵션
+            ],
+
+            fontSizes: [
+                '8', '9', '10', '11', '12', '14', '16', '18',
+                '20', '22', '24', '28', '30', '36', '50', '72',
+            ], // 글꼴 크기 옵션
+
+            styleTags: [
+                'p',  // 일반 문단 스타일 옵션
+                {
+                    title: 'Blockquote',
+                    tag: 'blockquote',
+                    className: 'blockquote',
+                    value: 'blockquote',
+                },  // 인용구 스타일 옵션
+                'pre',  // 코드 단락 스타일 옵션
+                {
+                    title: 'code_light',
+                    tag: 'pre',
+                    className: 'code_light',
+                    value: 'pre',
+                },  // 밝은 코드 스타일 옵션
+                {
+                    title: 'code_dark',
+                    tag: 'pre',
+                    className: 'code_dark',
+                    value: 'pre',
+                },  // 어두운 코드 스타일 옵션
+                'h1', 'h2', 'h3', 'h4', 'h5', 'h6',  // 제목 스타일 옵션
+            ]
+        });
+    });
+</script>
+
+<script type="application/javascript" th:fragment="form-validation">
+    (function () {
+        'use strict';
+
+        window.addEventListener('load', function () {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            const forms = document.getElementsByClassName('needs-validation');
+
+            // Loop over them and prevent submission
+            Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        }, false)
+    }())
+</script>
+
+
+</html>

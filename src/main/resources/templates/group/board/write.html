@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments.html :: head}"></head>
+<body>
+<header th:replace="~{fragments.html :: nav-bar}"></header>
+
+<div th:if="${current != null}">
+    <div th:replace="~{fragments.html :: group-bar (${current})}"></div>
+</div>
+
+<div class="container">
+    <div class="text-center">
+        <h1 th:if="${current != null}" th:text="${current}+' 작성'"> </h1>
+        <h1 th:if="${current == null}">공지사항 작성</h1>
+    </div>
+
+    <hr>
+
+    <form th:action="@{${current != null} ? '/group/' + ${group.path} + '/' + ${current} + '/write' : '/notice/write'}" method="post">
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1">제목</span>
+            <input type="text" class="form-control" PLACEHOLDER="제목입력" name="title">
+        </div>
+
+        <textarea id="summernote" class="summernote" name="content"></textarea>
+        <button class="btn btn-light">등록</button>
+    </form>
+
+</div>
+<script th:replace="~{fragments.html :: summernote}"></script>
+</body>
+</html>

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments.html :: head}"></head>
+<body>
+<header th:replace="~{fragments.html :: nav-bar}"></header>
+<div th:replace="~{fragments.html :: profile-bar}"></div>
+<div class="container-xl px-4 mt-4">
+    <hr class="mt-0 mb-4">
+    <div class="row">
+        <div class="col-xl-4">
+            <div class="card mb-4 mb-xl-0">
+                <!-- 프로필 좌측(상단) -->
+                <div class="card-header">Profile Picture</div>
+                <div class="card-body text-center">
+                    <!-- 프로필 이미지 -->
+                    <img class="img-account-profile rounded-circle mb-2" src="http://bootdey.com/img/Content/avatar/avatar1.png" alt="">
+                    <div class="small font-italic text-muted mb-4"></div>
+                    <button class="btn btn-primary" type="button" th:if="${editable}">프로필 이미지 수정</button>
+                </div>
+            </div>
+            <!-- 스택 아이콘 -->
+            <div class="card mb-4 mb-xl-0 mt-3" th:if="${not editable}">
+                <div class="card-header">Skill Stack</div>
+                <div class="card-body text-center">
+                    <img class="m-1 mt-2" th:each="url : ${skillUrl}" th:src="${url}"></img>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-8">
+            <!-- 프로필 우측(하단) -->
+            <div class="card mb-4">
+                <div class="card-header">Account Details</div>
+                <div class="card-body">
+                    <form th:action="@{/setting/profile}" method="post">
+                        <!-- 닉네임 -->
+                        <div class="mb-3">
+                            <label class="small mb-1" for="inputUsername">닉네임</label>
+                            <input class="form-control" id="inputUsername" type="text" name="nickName" th:value="${account.nickName}" th:attr="readonly=${!editable}">
+                        </div>
+                        <!-- 소개 -->
+                        <div class="mb-3">
+                            <label class="small mb-1" for="inputIntroduction ">간단한 소개</label>
+                            <textarea class="form-control" id="inputIntroduction " name="bio" placeholder="간단한 소개 입력"
+                                      th:text="${account.profile.bio != null ? account.profile.bio : ''}" th:attr="readonly=${!editable}"></textarea>
+                        </div>
+
+                        <div class="row gx-3 mb-3">
+                            <!-- URL -->
+                            <div class="col-md-6">
+                                <label class="small mb-1" for="inputOrgName">URL (github 또는 운영블로그)</label>
+                                <input class="form-control" id="inputOrgName" type="text" placeholder="URL입력" name="url"
+                                       th:value="${account.profile.url != null ? account.profile.url : ''}" th:attr="readonly=${!editable}">
+                            </div>
+                            <!-- 활동지역 -->
+                            <div class="col-md-6">
+                                <label class="small mb-1" for="inputLocation">지역</label>
+                                <input class="form-control" id="inputLocation" type="text" placeholder="지역 입력" name="location"
+                                       th:value="${account.profile.location != null ? account.profile.location : ''}" th:attr="readonly=${!editable}">
+                            </div>
+                        </div>
+
+                        <!-- 이메일 -->
+                        <div class="mb-3">
+                            <label class="small mb-1" for="inputEmailAddress">이메일</label>
+                            <input class="form-control" id="inputEmailAddress" type="email" placeholder="이메일 입력" th:value="${account.email}" readonly>
+                        </div>
+
+                        <div class="row gx-3 mb-3">
+                            <!-- 생년월일 -->
+                            <div class="col-md-6">
+                                <label class="small mb-1" for="inputBirthday">생년월일</label>
+                                <input class="form-control" id="inputBirthday" type="text" name="birthday" placeholder="생년월일 입력" th:value="${account.birthday}" readonly>
+                            </div>
+                        </div>
+
+                        <div th:if="${editable}" class="row">
+                            <label class="small mb-1">기술스택</label>
+                            <div class="col-12">
+                                <div id="whitelist" th:text="${whitelist}" hidden></div>
+                                <input id="zones" type="text" name="skillName" th:value="${#strings.listJoin(skills, ',')}"
+                                       class="tagify-outside" aria-describedby="tagHelp"/>
+                            </div>
+                        </div>
+
+                        <!-- 버튼 -->
+                        <a class="btn btn-primary" type="button" th:if="${isOwner and !editable}" href="/setting/profile">프로필 수정</a>
+                        <button class="btn btn-primary" th:if="${editable and isOwner}">변경 저장</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="/node_modules/@yaireo/tagify/dist/tagify.min.js"></script>
+<script type="application/javascript" th:inline="javascript">
+    $(function () {
+        let csrfToken = /*[[${_csrf.token}]]*/ null;
+        let csrfHeader = /*[[${_csrf.headerName}]]*/ null;
+        $(document).ajaxSend(function (e, xhr, options) {
+            xhr.setRequestHeader(csrfHeader, csrfToken);
+        });
+    });
+</script>
+<script type="application/javascript" th:if="${editable}">
+    $(function () {
+        function tagRequest(url, skillName) {
+            $.ajax({
+                dataType: "json",
+                autocomplete: {
+                    enabled: true,
+                    rightKey: true
+                },
+                contentType: "application/json; charset=utf-8",
+                method: "POST",
+                url: "/setting/profile" + url,
+                data: JSON.stringify({'skillName': skillName})
+            }).done(function (data, status) {
+                console.log("${data} and status is #{status}")
+            })
+        }
+
+        function onAdd(e) {
+            tagRequest("/add", e.detail.data.value);
+        }
+
+        function onRemove(e) {
+            tagRequest("/remove", e.detail.data.value);
+        }
+
+        let tagInput = document.querySelector("#zones");
+        tagInput.classList.add('form-control');
+
+        let tagify = new Tagify(tagInput, {
+            pattern: /^.{0,20}$/,
+            whitelist: JSON.parse(document.querySelector("#whitelist").textContent),
+            dropdown: {
+                enabled: 1
+            }
+        });
+
+        tagify.on("add", onAdd);
+        tagify.on("remove", onRemove);
+
+        tagify.DOM.scope.parentNode.insertBefore(tagify.DOM.scope, tagInput);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments.html :: head}"></head>
+<body>
+<header th:replace="~{fragments.html :: nav-bar}"></header>
+
+<div th:if="${current != null}">
+    <div th:replace="~{fragments.html :: group-bar (${current})}"></div>
+</div>
+
+<div class="container">
+    <div class="text-center">
+        <h1 th:if="${current == null}" th:text="공지사항"></h1>
+        <h1 th:if="${current != null}" th:text="${current}"></h1>
+    </div>
+
+    <hr>
+
+    <div class="input-group mb-3 border">
+        <span class="input-group-text" id="basic-addon1">제목</span>
+        <input class="form-control form-control-plaintext m-2" th:value="${board.title}" readonly></input>
+    </div>
+
+    <div th:utext="${board.content}" class="border w-100" style="height:300px;"></div>
+</div>
+</body>
+</html>

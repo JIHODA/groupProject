@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments.html :: head}"></head>
+<body>
+<header th:replace="~{fragments.html :: nav-bar}"></header>
+<div th:replace="~{fragments.html :: group-bar (notice)}"></div>
+
+<div class="container">
+    <div class="text-center">
+        <h1>공지사항</h1>
+    </div>
+    <hr>
+    <div class="d-flex justify-content-center container mt-4 text-center">
+        <table class="table table-light table-striped table-bordered">
+            <colgroup>
+                <col width=3%>
+                <col width=47%>
+                <col width=20%>
+                <col width=20%>
+                <col width=10%>
+            </colgroup>
+                <th>#</th>
+                <th>제목</th>
+                <th>작성자</th>
+                <th>작성일</th>
+                <th>조회수</th>
+            <tr th:each="board, stat : ${boardList}">
+                <th th:text="${boardList.getTotalElements() - stat.index}">글번호</th>
+                <td>
+                    <a th:href="@{'/group/'+${group.path}+'/'+${current}+'/'+${board.boardId}}"
+                       th:utext="${board.title}">제목</a></td>
+                <td th:text="${board.writer.nickName}">작성자</td>
+                <td th:text="${board.regDate}">작성일</td>
+                <td th:text="${board.hit}">조회수</td>
+            </tr>
+        </table>
+    </div>
+    <div th:if="${!boardList.isEmpty()}">
+        <ul	class="pagination h-100 justify-content-center align-items-center" style="margin-top: 20px;">
+
+            <li class="page-item" th:classappend="${!boardList.hasPrevious} ? 'disabled'">
+                <a class="page-link" th:href="@{|?page=${boardList.number-1}|}">
+                    <span><</span>
+                </a>
+            </li>
+            <li th:class="page-item" th:each="page: ${#numbers.sequence(0, boardList.totalPages-1)}"
+                th:classappend="${page == boardList.number} ? 'active'">
+                <a th:text="${page} + 1" class="page-link" th:href="@{|?page=${page}|}">1</a>
+            </li>
+            <li class="page-item" th:classappend="${!boardList.hasNext} ? 'disabled'">
+                <a class="page-link" th:href="@{|?page=${boardList.number+1}|}">
+                    <span>></span>
+                </a>
+            </li>
+
+
+        </ul>
+    </div>
+    <div>
+        <a class="btn btn-light submit" th:if="${group.isManager(#authentication.principal)}"
+            th:href="@{'/group/'+${group.path}+'/'+${current}+'/write'}">글 등록</a>
+    </div>
+</div>
+</body>
+</html>
