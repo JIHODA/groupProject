@@ -29,6 +29,10 @@ public class GroupService {
         return groupEntity;
     }
 
+    public void deleteGroup(GroupEntity groupEntity){
+        groupRepository.delete(groupEntity);
+    }
+
     private GroupEntity saveNewGroup(GroupForm groupForm) {
         GroupEntity groupEntity = GroupEntity.from(groupForm);
 

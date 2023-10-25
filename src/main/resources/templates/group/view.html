@@ -16,6 +16,9 @@
         <form th:action="@{'/group/'+${group.path}+'/join'}" method="post">
             <button class="btn btn-outline-primary" th:if="${not group.isMember(#authentication.principal)}">가입</button>
         </form>
+        <form th:action="@{'/group/'+${group.path}+'/delete'}" method="post">
+            <button class="btn btn-outline-primary" th:if="${group.isManager(#authentication.principal)}">그룹해체</button>
+        </form>
     </div>
 
     <div class="d-flex justify-content-between">

@@ -49,7 +49,7 @@ public class Board{
 
     private String boardType;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "GROUP_ID")
     private GroupEntity groupEntity;
 

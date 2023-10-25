@@ -1,6 +1,7 @@
 package com.app.jihoproject.group.domain.entity;
 
 import com.app.jihoproject.account.domain.entity.Account;
+import com.app.jihoproject.board.domain.entity.Board;
 import com.app.jihoproject.group.form.GroupForm;
 import com.app.jihoproject.support.AccountDetails;
 import jakarta.persistence.*;
@@ -42,7 +43,7 @@ public class GroupEntity {
     private List<GroupMembers> members = new ArrayList<>();
 
     @OneToMany(mappedBy = "groupEntity", orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<GroupMembers> boards = new ArrayList<>();
+    private List<Board> boards = new ArrayList<>();
 
     public static GroupEntity from(GroupForm groupForm){
         return GroupEntity.builder()

@@ -163,4 +163,10 @@ public class GroupController {
         return "redirect:/group/"+URLEncoder.encode(path, StandardCharsets.UTF_8);
     }
 
+    @PostMapping("/group/{path}/delete")
+    public String deleteGroup(@PathVariable("path") String path){
+        groupService.deleteGroup(groupService.getGroup(path));
+        return "redirect:/";
+    }
+
 }
